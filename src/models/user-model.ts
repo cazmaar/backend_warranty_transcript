@@ -1,66 +1,41 @@
 /* eslint-disable max-len */
 import db from "../db/connection.js";
-// User schema
-export interface IUser {
-  id: number;
-  name: string;
-  email: string;
-}
 
 interface AllWarrantys {
-  payload: [
-    {
-      id: number;
-      email: string;
-      company: string;
-      website: string;
-      date: string;
-      image: string;
-    }
-  ];
+  id: number;
+  email: string;
+  company: string;
+  website: string;
+  date: string;
+  image: string;
 }
 
 // Get all spaces from warrantys table
-export async function getAllSpaces(): Promise<AllWarrantys[]> {
-  const result = await db.query(`SELECT * FROM spaces`);
-  return result.rows;
-}
+export const getAllReceipts = async (): Promise<AllWarrantys[]> => {
+  const res = await db(`SELECT * FROM warranty`, []);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return res.rows;
+};
 
-// // Search for a space by ID
-// export async function getSpaceByID(id) {
-//   const result = await db.query(`SELECT * FROM spaces WHERE id = $1;`, [id]);
-//   return result.rows;
-// }
+// post to  warranty
+export const postReceipt = async (
+  email: string,
+  company: string,
+  website: string,
+  date: string,
+  image: string
+): Promise<AllWarrantys[]> => {
+  const res = await db(
+    `INSERT INTO  warranty (email, company, website, date, image) VALUES($1,$2,$3,$4,$5) RETURNING *`,
+    [email, company, website, date, image]
+  );
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return res.rows;
+};
 
-/**
- * Get a new User object.
- *
- * @returns
- */
-function getNew(name: string, email: string): IUser {
-  return {
-    id: -1,
-    email,
-    name
-  };
-}
-
-/**
- * Copy a user object.
- *
- * @param user
- * @returns
- */
-function copy(user: IUser): IUser {
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name
-  };
-}
-
-// Export default
-export default {
-  new: getNew,
-  copy
+// delete post from warranty
+export const postDelete= async (id: number): Promise<AllWarrantys[]> => {
+  const res = await db(`DELETE FROM warranty where id=$1 RETURNING *`, [id]);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return res.rows;
 };
