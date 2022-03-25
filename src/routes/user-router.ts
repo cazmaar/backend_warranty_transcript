@@ -1,8 +1,10 @@
 import StatusCodes from 'http-status-codes';
+import getA
 import { Request, Response, Router } from 'express';
 
 import userService from '@services/user-service';
 import { ParamMissingError } from '@shared/errors';
+import { getAllReceipts } from '@models/user-model';
 
 
 
@@ -19,13 +21,27 @@ export const p = {
 } as const;
 
 
+router.get("/:id", async function (req, res, next) {
+  const id = Number(req.params.id);
+  const space = await getAllReceipts();
 
-/**
- * Get all users.
- */
-router.get(p.get, async (_: Request, res: Response) => {
-    const users = await userService.getAll();
-    return res.status(OK).json({users});
+  res.json({
+    success: true,
+    payload: space
+  });
+});
+
+
+
+
+
+//  Get all receipts
+router.get("/", async (req: Request, res: Response)=> {
+    const warranty = await getAllReceipts();
+  res.json({
+    success: true,
+    payload: warranty
+  });
 });
 
 
